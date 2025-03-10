@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router-dom"; 
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./index.css";
 
 import App from "./App.tsx";
@@ -8,8 +8,7 @@ import App from "./App.tsx";
 import MainPage from "./pages/MainPage.tsx";
 import FormPage from "./pages/FormPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
-import MyPage from "./pages/MyPage.tsx"
-
+import MyPage from "./pages/MyPage.tsx";
 
 const router = createBrowserRouter([
   {
