@@ -9,10 +9,8 @@ const FormPage = () => {
   const [name, setName] = useState("");
   const [memo, setMemo] = useState("");
   const [notify, setNotify] = useState(false);
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [dosageTimes, setDosageTimes] = useState<
-    { day: string; times: Dayjs[] }[]
-  >([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]); 
+  const [dosageTimes, setDosageTimes] = useState<Dayjs[]>([]); 
 
   const days = ["월", "화", "수", "목", "금", "토", "일"];
 
@@ -20,44 +18,25 @@ const FormPage = () => {
   const handleDaySelect = (day: string) => {
     if (selectedDays.includes(day)) {
       setSelectedDays(selectedDays.filter(d => d !== day));
-      setDosageTimes(dosageTimes.filter(d => d.day !== day));
     } else {
       setSelectedDays([...selectedDays, day]);
-      setDosageTimes([...dosageTimes, { day, times: [] }]);
     }
   };
 
-  // 특정 요일에 복용 시간 추가
-  const addTimeForDay = (day: string) => {
-    setDosageTimes(
-      dosageTimes.map(d =>
-        d.day === day ? { ...d, times: [...d.times, dayjs()] } : d
-      )
-    );
+  // 복용 시간 추가
+  const addTime = () => {
+    setDosageTimes([...dosageTimes, dayjs()]); // 현재 시간 추가
   };
 
-  // 특정 요일에서 복용 시간 제거
-  const removeTimeForDay = (day: string, index: number) => {
-    setDosageTimes(
-      dosageTimes.map(d =>
-        d.day === day
-          ? { ...d, times: d.times.filter((_, i) => i !== index) }
-          : d
-      )
-    );
+  // 복용 시간 제거
+  const removeTime = (index: number) => {
+    setDosageTimes(dosageTimes.filter((_, i) => i !== index));
   };
 
   // 복용 시간 업데이트
-  const updateTimeForDay = (day: string, index: number, newTime: Dayjs) => {
+  const updateTime = (index: number, newTime: Dayjs) => {
     setDosageTimes(
-      dosageTimes.map(d =>
-        d.day === day
-          ? {
-              ...d,
-              times: d.times.map((t, i) => (i === index ? newTime : t)),
-            }
-          : d
-      )
+      dosageTimes.map((time, i) => (i === index ? newTime : time))
     );
   };
 
@@ -95,29 +74,28 @@ const FormPage = () => {
           </div>
         </div>
 
-        {dosageTimes.map(({ day, times }) => (
-          <div key={day} className="mb-4 w-full flex flex-col">
-            <p className="font-medium">{day}요일 복용 시간</p>
-            {times.map((time, index) => (
-              <div key={index} className="flex items-center  gap-5 my-2">
-                <TimePicker
-                  value={time}
-                  onChange={newValue => updateTimeForDay(day, index, newValue!)}
-                  className="w-full"
-                />
-                <IconButton onClick={() => removeTimeForDay(day, index)}>
-                  <CircleX size={20} />
-                </IconButton>
-              </div>
-            ))}
-            <Button
-              startIcon={<Plus size={20} />}
-              onClick={() => addTimeForDay(day)}
-            >
-              추가
-            </Button>
-          </div>
-        ))}
+        <div className="mb-4">
+          <p className="font-medium">복용 시간</p>
+          {dosageTimes.map((time, index) => (
+            <div key={index} className="flex items-center gap-5 my-2">
+              <TimePicker
+                value={time}
+                onChange={newValue => updateTime(index, newValue!)}
+                className="w-full"
+              />
+              <IconButton onClick={() => removeTime(index)}>
+                <CircleX size={20} />
+              </IconButton>
+            </div>
+          ))}
+          <Button
+            startIcon={<Plus size={20} />}
+            onClick={addTime}
+            className="mt-2"
+          >
+            시간 추가
+          </Button>
+        </div>
 
         <TextField
           label="메모"
