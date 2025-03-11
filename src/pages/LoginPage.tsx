@@ -28,21 +28,28 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-end h-screen pb-10 gap-4">
-      <ButtonWithIcon
-        onClick={onKakaoLogin}
-        className="bg-yellow-400 text-[#3B1E1E] hover:bg-yellow-500"
-        icon={<SiKakaotalk size={24} />}
-      >
-        Kakao 로그인
-      </ButtonWithIcon>
-      <ButtonWithIcon
-        onClick={onGoogleLogin}
-        className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-        icon={<FcGoogle size={24} />}
-      >
-        Google 로그인
-      </ButtonWithIcon>
+    <div className="flex flex-col items-center justify-center h-screen px-4">
+      <img
+        src="/nutrilog_logo.png"
+        alt="Nutrilog Logo"
+        className="w-40 h-40 mb-10" // Increased size and margin
+      />
+      <div className="flex flex-col gap-4 items-center w-full max-w-xs">
+        <ButtonWithIcon
+          onClick={onKakaoLogin}
+          className="bg-yellow-400 text-[#3B1E1E] hover:bg-yellow-500"
+          icon={<SiKakaotalk size={24} />}
+        >
+          Kakao 로그인
+        </ButtonWithIcon>
+        <ButtonWithIcon
+          onClick={onGoogleLogin}
+          className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+          icon={<FcGoogle size={24} />}
+        >
+          Google 로그인
+        </ButtonWithIcon>
+      </div>
     </div>
   );
 };
