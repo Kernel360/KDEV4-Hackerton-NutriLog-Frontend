@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { handleAllowNotification } from "../services/notificationPermission";
 
 // 액세스 토큰 관리 유틸 함수
 export const setAccessToken = (token: string) => {
@@ -63,6 +64,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         if (accessToken && user) {
           setAccessToken(accessToken); // 액세스 토큰 저장
           set({ id: user.id, nickname: user.nickname, accessToken }); // Zustand에 유저 정보 저장
+          await handleAllowNotification();
         }
       } catch (error) {
         console.error("로그인 실패:", error);

@@ -10,8 +10,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // 현재 경로가 변경될 때마다 토큰 유효성 검사
     const accessToken = localStorage.getItem("access_token");
-    console.log(accessToken);
-    console.log(isAccessTokenValid());
     if (accessToken && !isAccessTokenValid()) {
       // 토큰이 만료된 경우 로그아웃 처리
       logout();
