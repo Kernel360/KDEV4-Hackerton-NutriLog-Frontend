@@ -1,7 +1,5 @@
 import { create } from "zustand";
 import axios from "axios";
-import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 
 // 액세스 토큰 관리 유틸 함수
 export const setAccessToken = (token: string) => {
@@ -73,7 +71,6 @@ export const useAuthStore = create<AuthState>((set, get) => {
     logout: () => {
       removeAccessToken(); // 액세스 토큰 삭제
       set({ id: null, nickname: null, accessToken: null }); // Zustand 상태 초기화
-      window.location.href = "/login"; // 로그인 페이지로 이동
     },
     setFcmToken: (token: string) => set({ fcmToken: token }),
 
@@ -104,31 +101,3 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
   };
 });
-
-// 로그인 여부를 확인하고 라우팅 처리하는 훅
-export const useAuthRedirect = () => {
-  const navigate = useNavigate();
-  const { accessToken, logout } = useAuthStore();
-  const location = useLocation(); // 현재 location 정보 가져오기
-
-  useEffect(() => {
-    const isOAuthRedirect = location.pathname.startsWith("/oauth/");
-
-    if (isOAuthRedirect) {
-      // OAuth 리디렉션 후, accessToken 이 있으면 메인 페이지로 이동
-      if (accessToken && isAccessTokenValid()) {
-        navigate("/");
-      } else if (!accessToken) {
-        // accessToken 이 없으면 대기
-        console.log("OAuth 리디렉션 후 로그인 대기 중...");
-      }
-    } else {
-      // 일반적인 인증 상태 확인
-      if (accessToken && isAccessTokenValid()) {
-        navigate("/");
-      } else {
-        logout();
-      }
-    }
-  }, [navigate, accessToken, logout, location]);
-};

@@ -3,6 +3,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./index.css";
 
 import App from "./App.tsx";
+import ProtectedRoute from "./components/common/ProtectedRoute.tsx";
 
 import MainPage from "./pages/MainPage.tsx";
 import FormPage from "./pages/FormPage.tsx";
@@ -17,7 +18,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <MainPage />,
+        element: (
+          <ProtectedRoute>
+            <MainPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/login",
@@ -29,18 +34,24 @@ const router = createBrowserRouter([
       },
       {
         path: "/form",
-        element: <FormPage />,
+        element: (
+          <ProtectedRoute>
+            <FormPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/my",
-        element: <MyPage />,
+        element: (
+          <ProtectedRoute>
+            <MyPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <>
-    <RouterProvider router={router} /> {/* RouterProvider로 라우터 적용 */}
-  </>
+  <RouterProvider router={router} />
 );
