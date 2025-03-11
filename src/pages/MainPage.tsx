@@ -5,8 +5,11 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { ChevronRight, ChevronLeft } from "lucide-react"; // lucide-react 아이콘 불러오기
+import { useAuthStore } from "../store/useAuthStore";
+import { handleAllowNotification } from "../services/notificationPermission";
 
 const MainPage = () => {
+  const { nickname } = useAuthStore();
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs()); // Default to today
   const [checked, setChecked] = useState<boolean[]>([
     false,
@@ -17,6 +20,12 @@ const MainPage = () => {
     false,
     false,
   ]);
+
+  useEffect(() => {
+    if (nickname) {
+      handleAllowNotification();
+    }
+  }, [nickname]);
 
   const days = ["월", "화", "수", "목", "금", "토", "일"];
 
@@ -73,7 +82,7 @@ const MainPage = () => {
   };
 
   const handleCheckChange = (index: number) => {
-    setChecked(prev => {
+    setChecked((prev) => {
       const newChecked = [...prev];
       newChecked[index] = !newChecked[index];
       return newChecked;
@@ -116,9 +125,7 @@ const MainPage = () => {
                 }}
               >
                 {days[date.day()]}
-                <span className="text-xs">
-                  {date.format("MM/DD")}
-                </span>
+                <span className="text-xs">{date.format("MM/DD")}</span>
               </Button>
             </div>
           ))}
@@ -141,7 +148,7 @@ const MainPage = () => {
             </h3>
 
             {supplements
-              .filter(supplement =>
+              .filter((supplement) =>
                 supplement.days.includes(days[selectedDate.day()])
               ) // 날짜 필터링
               .map((supplement, index) => (

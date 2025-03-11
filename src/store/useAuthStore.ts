@@ -40,7 +40,7 @@ interface AuthState {
 }
 
 // Zustand 스토어 생성
-export const useAuth = create<AuthState>((set) => {
+export const useAuthStore = create<AuthState>((set) => {
   const initialAccessToken = getAccessToken(); // 로컬 스토리지에서 액세스 토큰을 가져옴
   return {
     id: null,
@@ -80,7 +80,7 @@ export const useAuth = create<AuthState>((set) => {
 // 로그인 여부를 확인하고 라우팅 처리하는 훅
 export const useAuthRedirect = () => {
   const navigate = useNavigate();
-  const { accessToken, logout } = useAuth();
+  const { accessToken, logout } = useAuthStore();
 
   useEffect(() => {
     if (accessToken && isAccessTokenValid()) {
