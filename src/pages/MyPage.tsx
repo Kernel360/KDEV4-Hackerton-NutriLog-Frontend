@@ -1,36 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Button,
   Card,
   CardContent,
   Typography,
-  // FormControlLabel,
-  // Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@mui/material";
-import { MoreVertical } from "lucide-react";
+} from '@mui/material';
+import { MoreVertical } from 'lucide-react';
+import { useSupplementStore } from '../store/useSupplementStroe'; // Zustand store import
 
 const MyPage = () => {
-  // const [checked, setChecked] = useState<boolean[]>([false, false, false]);
+  const { supplements, fetchSupplements, deleteSupplement } = useSupplementStore(); // Zustand store에서 상태 가져오기
   const [openModal, setOpenModal] = useState(false);
-  const [selectedSupplement, setSelectedSupplement] = useState<number | null>(
-    null
-  );
+  const [selectedSupplement, setSelectedSupplement] = useState<number | null>(null);
 
-  const supplements = [
-    { name: "비타민C", time: "08:00", memo: "공복에 복용", id: 1 },
-    { name: "오메가3", time: "12:00", memo: "식후 복용", id: 2 },
-    { name: "멀티비타민", time: "18:00", memo: "식사와 함께 복용", id: 3 },
-  ];
-
-  // const handleCheckChange = (index: number) => {
-  //   const newChecked = [...checked];
-  //   newChecked[index] = !newChecked[index];
-  //   setChecked(newChecked);
-  // };
+  useEffect(() => {
+    fetchSupplements(); // 컴포넌트가 마운트될 때 데이터 가져오기
+  }, [fetchSupplements]);
 
   const handleOpenModal = (index: number) => {
     setSelectedSupplement(index);
@@ -43,14 +32,19 @@ const MyPage = () => {
   };
 
   const handleDelete = () => {
-    setOpenModal(false);
-    setSelectedSupplement(null);
+    if (selectedSupplement !== null) {
+      deleteSupplement(supplements[selectedSupplement].id); // supplementId를 이용해 삭제
+      setOpenModal(false);
+      setSelectedSupplement(null);
+    }
   };
 
   const handleEdit = () => {
     setOpenModal(false);
     setSelectedSupplement(null);
   };
+
+  const supplementList = Array.isArray(supplements) ? supplements : [];
 
   return (
     <div className="flex flex-col w-full h-screen p-4">
@@ -70,43 +64,42 @@ const MyPage = () => {
             현재 복용 중인 약
           </Typography>
 
-          {supplements.map((supplement, index) => (
-            <div
-              key={supplement.id}
-              className="flex justify-between items-center p-4 border-b"
-            >
-              <div className="flex flex-col">
-                <Typography variant="body1" className="font-semibold">
-                  {supplement.name}
-                </Typography>
-                <Typography variant="body2" className="text-gray-600">
-                  알림 시간: {supplement.time}
-                </Typography>
-                <Typography variant="body2" className="text-gray-500">
-                  {supplement.memo}
-                </Typography>
+          {supplementList.length > 0 ? (
+            supplementList.map((supplement, index) => (
+              <div
+                key={supplement.id}
+                className="flex justify-between items-center p-4 border-b"
+              >
+                <div className="flex flex-col">
+                  <Typography variant="body1" className="font-semibold">
+                    {supplement.name}
+                  </Typography>
+                </div>
+                <div className="flex items-center">
+                  <Button
+                    onClick={() => handleOpenModal(index)}
+                    startIcon={<MoreVertical />}
+                    variant="text"
+                    color="primary"
+                  >
+                    더보기
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center">
-                <Button
-                  onClick={() => handleOpenModal(index)}
-                  startIcon={<MoreVertical />}
-                  variant="text"
-                  color="primary"
-                >
-                  더보기
-                </Button>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <Typography variant="body1" className="text-gray-500">
+              현재 복용 중인 약이 없습니다.
+            </Typography>
+          )}
         </CardContent>
       </Card>
 
-      {/* Modal for Edit and Delete */}
       <Dialog open={openModal} onClose={handleCloseModal}>
         <DialogTitle>약 정보</DialogTitle>
         <DialogContent>
           <Typography variant="body1">
-            선택된 약: {supplements[selectedSupplement!]?.name}
+            {supplementList[selectedSupplement!]?.name}
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -116,7 +109,7 @@ const MyPage = () => {
           <Button onClick={handleEdit} color="primary">
             수정
           </Button>
-          <Button onClick={handleCloseModal} >
+          <Button onClick={handleCloseModal}>
             취소
           </Button>
         </DialogActions>
