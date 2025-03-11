@@ -1,19 +1,22 @@
-import { useState } from "react";
 import { TextField, Button, Switch, IconButton } from "@mui/material";
 import { Plus, CircleX } from "lucide-react";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
+import useSupplementStore from "../store/useSupplementStore";
 
 const FormPage = () => {
-  const [name, setName] = useState("");
-  const [notify, setNotify] = useState(false);
-  const [selectedDays, setSelectedDays] = useState<string[]>([]); 
-  const [dosageTimes, setDosageTimes] = useState<Dayjs[]>([]); 
+  const {
+    name, setName,
+    notify, setNotify,
+    selectedDays, setSelectedDays,
+    dosageTimes, setDosageTimes,
+    addSupplementSchedule
+  } = useSupplementStore();
 
   const days = ["월", "화", "수", "목", "금", "토", "일"];
+  const englishDays = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
-  // 요일 선택 핸들러
   const handleDaySelect = (day: string) => {
     if (selectedDays.includes(day)) {
       setSelectedDays(selectedDays.filter(d => d !== day));
@@ -22,21 +25,26 @@ const FormPage = () => {
     }
   };
 
-  // 복용 시간 추가
   const addTime = () => {
-    setDosageTimes([...dosageTimes, dayjs()]); // 현재 시간 추가
+    setDosageTimes([...dosageTimes, dayjs()]); 
   };
 
-  // 복용 시간 제거
   const removeTime = (index: number) => {
     setDosageTimes(dosageTimes.filter((_, i) => i !== index));
   };
 
-  // 복용 시간 업데이트
   const updateTime = (index: number, newTime: Dayjs) => {
     setDosageTimes(
       dosageTimes.map((time, i) => (i === index ? newTime : time))
     );
+  };
+
+  const handleSubmit = () => {
+    const daysOfWeek = selectedDays.map(day => englishDays[days.indexOf(day)]);
+
+    const scheduledTime = dosageTimes.map(time => time.format("HH:mm"));
+
+    addSupplementSchedule(name, daysOfWeek, scheduledTime, notify);
   };
 
   return (
@@ -104,7 +112,7 @@ const FormPage = () => {
           />
         </div>
 
-        <Button variant="contained" color="primary" fullWidth>
+        <Button variant="contained" color="primary" fullWidth onClick={handleSubmit}>
           저장하기
         </Button>
       </div>
