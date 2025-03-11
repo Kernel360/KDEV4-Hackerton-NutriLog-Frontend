@@ -154,9 +154,6 @@ const MainPage = () => {
                     <span className="text-sm text-gray-600">
                       알림 시간: {supplement.time}
                     </span>
-                    <span className="text-xs text-gray-500">
-                      {supplement.memo}
-                    </span>
                   </div>
 
                   <FormControlLabel

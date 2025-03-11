@@ -97,17 +97,6 @@ const FormPage = () => {
           </Button>
         </div>
 
-        <TextField
-          label="메모"
-          fullWidth
-          variant="outlined"
-          className="mb-4"
-          multiline
-          rows={3}
-          value={memo}
-          onChange={e => setMemo(e.target.value)}
-        />
-
         <div className="flex items-center justify-between mb-4">
           <p className="font-medium">알림 받기</p>
           <Switch

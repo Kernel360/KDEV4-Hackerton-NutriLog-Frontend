@@ -87,15 +87,6 @@ const MyPage = () => {
                 </Typography>
               </div>
               <div className="flex items-center">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={checked[index]}
-                      onChange={() => handleCheckChange(index)}
-                    />
-                  }
-                  label="알림 받기"
-                />
                 <Button
                   onClick={() => handleOpenModal(index)}
                   startIcon={<MoreVertical />}
