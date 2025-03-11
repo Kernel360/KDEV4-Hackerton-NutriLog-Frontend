@@ -5,12 +5,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { ChevronRight, ChevronLeft } from "lucide-react"; // lucide-react 아이콘 불러오기
-import { useAuthStore } from "../store/useAuthStore";
-import { handleAllowNotification } from "../services/notificationPermission";
 
 const MainPage = () => {
-  const { nickname } = useAuthStore();
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs()); // Default to today
+  const [apiSupplements, setApiSupplements] = useState<any[]>([]); // API 응답 데이터 저장 state
   const [checked, setChecked] = useState<boolean[]>([
     false,
     false,
@@ -21,39 +19,7 @@ const MainPage = () => {
     false,
   ]);
 
-  useEffect(() => {
-    console.log(nickname);
-    if (nickname) {
-      handleAllowNotification(); // FCM 토큰 요청
-    }
-  }, [nickname]);
-
   const days = ["월", "화", "수", "목", "금", "토", "일"];
-
-  // 각 날짜에 해당하는 영양제 시간 설정
-  const supplements = [
-    {
-      name: "비타민C",
-      time: "08:00",
-      memo: "공복에 복용",
-      days: ["월", "수", "금"],
-      checked: false,
-    },
-    {
-      name: "오메가3",
-      time: "12:00",
-      memo: "식후 복용",
-      days: ["화", "목", "일"],
-      checked: false,
-    },
-    {
-      name: "멀티비타민",
-      time: "18:00",
-      memo: "식사와 함께 복용",
-      days: ["수", "토"],
-      checked: false,
-    },
-  ];
 
   // 오늘 날짜를 기준으로 6일의 날짜 배열 만들기
   const generateDateRange = (currentDate: Dayjs) => {
@@ -72,6 +38,24 @@ const MainPage = () => {
 
   const handleDayClick = (date: Dayjs) => {
     setSelectedDate(date);
+    const month = date.format("MM"); // 월
+    const day = date.format("DD"); // 일
+    fetch(`http://localhost:8080/api/supplements/${month}/${day}`) // 백엔드 API 엔드포인트 호출
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`); // 응답 실패 시 에러 처리
+        }
+        return response.json(); // JSON 형식으로 응답 파싱
+      })
+      .then(data => {
+        console.log("API 응답 데이터:", data); // 응답 데이터 콘솔에 출력
+        setApiSupplements(data); // API 응답 데이터를 state에 저장
+        // 응답 데이터를 state에 저장하거나, 화면에 표시하는 로직 구현
+      })
+      .catch(error => {
+        console.error("API 요청 에러:", error); // 에러 발생 시 콘솔에 에러 메시지 출력
+        // 사용자에게 에러를 알리거나, 에러 처리 로직 구현
+      });
   };
 
   const handleArrowClick = (direction: "prev" | "next") => {
@@ -83,7 +67,7 @@ const MainPage = () => {
   };
 
   const handleCheckChange = (index: number) => {
-    setChecked((prev) => {
+    setChecked(prev => {
       const newChecked = [...prev];
       newChecked[index] = !newChecked[index];
       return newChecked;
@@ -126,7 +110,9 @@ const MainPage = () => {
                 }}
               >
                 {days[date.day()]}
-                <span className="text-xs">{date.format("MM/DD")}</span>
+                <span className="text-xs">
+                  {date.format("MM/DD")}
+                </span>
               </Button>
             </div>
           ))}
@@ -148,27 +134,50 @@ const MainPage = () => {
               선택된 날짜: {selectedDate.format("YYYY-MM-DD")}
             </h3>
 
-            {supplements
-              .filter((supplement) =>
-                supplement.days.includes(days[selectedDate.day()])
-              ) // 날짜 필터링
+            {apiSupplements
               .map((supplement, index) => (
                 <div
-                  key={index}
+                  key={supplement.historyId}
                   className="flex justify-between items-center p-4 border border-gray-300 rounded-lg shadow-sm"
                 >
                   <div className="flex flex-col">
-                    <span className="font-semibold">{supplement.name}</span>
+                    <span className="font-semibold">{supplement.supplementName}</span>
                     <span className="text-sm text-gray-600">
-                      알림 시간: {supplement.time}
+                      알림 시간: {supplement.scheduleTime}
                     </span>
                   </div>
 
                   <FormControlLabel
                     control={
                       <Checkbox
-                        checked={checked[index]}
-                        onChange={() => handleCheckChange(index)}
+                        checked={supplement.checked || false}
+                        onChange={(event) => {
+                          const isChecked = event.target.checked;
+                          const historyId = supplement.historyId;
+                          fetch(
+                            `http://localhost:8080/api/supplements/history/${historyId}?status=${
+                              isChecked ? "TAKEN" : "UNTAKEN"
+                            }`, // 쿼리 파라미터로 status 값을 전달
+                            {
+                              method: "PATCH",
+                            }
+                          );
+                          setApiSupplements((prevSupplements) =>
+                            {
+                              return prevSupplements.map((prevSupplement) => {
+                                if (prevSupplement.historyId === historyId) {
+                                  return {
+                                    ...prevSupplement,
+                                    checked: isChecked,
+                                    status: isChecked ? "TAKEN" : "UNTAKEN",
+                                  };
+                                } else {
+                                  return prevSupplement;
+                                }
+                              });
+                            }
+                          );
+                        }}
                       />
                     }
                     label="복용 완료"
@@ -183,3 +192,4 @@ const MainPage = () => {
 };
 
 export default MainPage;
+
