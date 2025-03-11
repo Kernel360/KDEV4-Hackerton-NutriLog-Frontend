@@ -4,8 +4,8 @@ import {
   Card,
   CardContent,
   Typography,
-  FormControlLabel,
-  Checkbox,
+  // FormControlLabel,
+  // Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -14,7 +14,7 @@ import {
 import { MoreVertical } from "lucide-react";
 
 const MyPage = () => {
-  const [checked, setChecked] = useState<boolean[]>([false, false, false]);
+  // const [checked, setChecked] = useState<boolean[]>([false, false, false]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedSupplement, setSelectedSupplement] = useState<number | null>(
     null
@@ -26,11 +26,11 @@ const MyPage = () => {
     { name: "멀티비타민", time: "18:00", memo: "식사와 함께 복용", id: 3 },
   ];
 
-  const handleCheckChange = (index: number) => {
-    const newChecked = [...checked];
-    newChecked[index] = !newChecked[index];
-    setChecked(newChecked);
-  };
+  // const handleCheckChange = (index: number) => {
+  //   const newChecked = [...checked];
+  //   newChecked[index] = !newChecked[index];
+  //   setChecked(newChecked);
+  // };
 
   const handleOpenModal = (index: number) => {
     setSelectedSupplement(index);
@@ -116,7 +116,7 @@ const MyPage = () => {
           <Button onClick={handleEdit} color="primary">
             수정
           </Button>
-          <Button onClick={handleCloseModal} color="default">
+          <Button onClick={handleCloseModal} >
             취소
           </Button>
         </DialogActions>

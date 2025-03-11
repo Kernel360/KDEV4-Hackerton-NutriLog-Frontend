@@ -7,7 +7,6 @@ import dayjs, { Dayjs } from "dayjs";
 
 const FormPage = () => {
   const [name, setName] = useState("");
-  const [memo, setMemo] = useState("");
   const [notify, setNotify] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]); 
   const [dosageTimes, setDosageTimes] = useState<Dayjs[]>([]); 
