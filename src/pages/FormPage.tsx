@@ -3,7 +3,7 @@ import { Plus, CircleX } from "lucide-react";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import useSupplementStore from "../store/useSupplementStore";
+import useSupplementScheduleStore from "../store/useSupplementScheduleStore";
 
 const FormPage = () => {
   const {
@@ -12,7 +12,7 @@ const FormPage = () => {
     selectedDays, setSelectedDays,
     dosageTimes, setDosageTimes,
     addSupplementSchedule
-  } = useSupplementStore();
+  } = useSupplementScheduleStore();
 
   const days = ["월", "화", "수", "목", "금", "토", "일"];
   const englishDays = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
