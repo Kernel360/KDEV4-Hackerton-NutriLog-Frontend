@@ -22,8 +22,9 @@ const MainPage = () => {
   ]);
 
   useEffect(() => {
+    console.log(nickname);
     if (nickname) {
-      handleAllowNotification();
+      handleAllowNotification(); // FCM 토큰 요청
     }
   }, [nickname]);
 

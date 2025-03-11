@@ -5,7 +5,7 @@ import { app } from "./initFirebase";
 const messaging = getMessaging(app);
 
 onMessage(messaging, (payload: MessagePayload) => {
-  // console.log("알림 도착 ", payload);
+  console.log("알림 도착 ", payload);
   const notificationTitle: string = payload.notification?.title || "알림";
   const notificationOptions: NotificationOptions = {
     body: payload.notification?.body || "",

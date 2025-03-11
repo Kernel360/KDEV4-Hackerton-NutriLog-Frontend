@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "clean": "vite clean",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -17,12 +18,12 @@
     "@mui/x-date-pickers": "^7.27.3",
     "@tailwindcss/postcss": "^4.0.12",
     "@tailwindcss/vite": "^4.0.12",
+    "@types/firebase": "^2.4.32",
     "axios": "^1.8.2",
     "class-variance-authority": "^0.7.1",
     "dayjs": "^1.11.13",
+    "firebase": "^10.8.0",
     "lucide-react": "^0.479.0",
-    "@types/firebase": "^2.4.32",
-    "firebase": "^11.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",

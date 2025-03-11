@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // 액세스 토큰 관리 유틸 함수
 export const setAccessToken = (token: string) => {
@@ -35,19 +35,22 @@ interface AuthState {
   id: string | null;
   nickname: string | null;
   accessToken: string | null;
+  fcmToken: string | null;
   login: (code: string, provider: "KAKAO" | "GOOGLE") => Promise<void>;
   logout: () => void;
+  setFcmToken: (token: string) => void;
+  sendFcmTokenToServer: (token: string) => Promise<void>;
 }
 
 // Zustand 스토어 생성
-export const useAuthStore = create<AuthState>((set) => {
+export const useAuthStore = create<AuthState>((set, get) => {
   const initialAccessToken = getAccessToken(); // 로컬 스토리지에서 액세스 토큰을 가져옴
   return {
     id: null,
     nickname: null,
     accessToken: initialAccessToken,
-
-    login: async (code, provider) => {
+    fcmToken: null,
+    login: async (code: string, provider: "KAKAO" | "GOOGLE") => {
       try {
         const response = await axios.post(
           "http://localhost:8080/api/auth/login",
@@ -58,21 +61,46 @@ export const useAuthStore = create<AuthState>((set) => {
         );
 
         const { accessToken, user } = response.data; // API 응답에서 사용자 정보와 토큰을 가져옴
-
+        console.log(accessToken, user);
         if (accessToken && user) {
           setAccessToken(accessToken); // 액세스 토큰 저장
           set({ id: user.id, nickname: user.nickname, accessToken }); // Zustand에 유저 정보 저장
-          window.location.href = "/"; // 메인 페이지로 이동
         }
       } catch (error) {
         console.error("로그인 실패:", error);
       }
     },
-
     logout: () => {
       removeAccessToken(); // 액세스 토큰 삭제
       set({ id: null, nickname: null, accessToken: null }); // Zustand 상태 초기화
       window.location.href = "/login"; // 로그인 페이지로 이동
+    },
+    setFcmToken: (token: string) => set({ fcmToken: token }),
+
+    sendFcmTokenToServer: async (token: string) => {
+      const accessToken = get().accessToken;
+      if (!accessToken) {
+        console.error(
+          "❌ 액세스 토큰이 없음, FCM 토큰을 서버에 전송할 수 없음"
+        );
+        return;
+      }
+
+      try {
+        await axios.post(
+          "http://localhost:8080/api/notifications/fcm-token",
+          { token },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        set({ fcmToken: token });
+        console.log("✅ FCM 토큰이 서버로 전송됨:", token);
+      } catch (error) {
+        console.error("❌ FCM 토큰 서버 전송 실패:", error);
+      }
     },
   };
 });
@@ -81,12 +109,26 @@ export const useAuthStore = create<AuthState>((set) => {
 export const useAuthRedirect = () => {
   const navigate = useNavigate();
   const { accessToken, logout } = useAuthStore();
+  const location = useLocation(); // 현재 location 정보 가져오기
 
   useEffect(() => {
-    if (accessToken && isAccessTokenValid()) {
-      navigate("/"); // 메인 페이지로 이동
+    const isOAuthRedirect = location.pathname.startsWith("/oauth/");
+
+    if (isOAuthRedirect) {
+      // OAuth 리디렉션 후, accessToken 이 있으면 메인 페이지로 이동
+      if (accessToken && isAccessTokenValid()) {
+        navigate("/");
+      } else if (!accessToken) {
+        // accessToken 이 없으면 대기
+        console.log("OAuth 리디렉션 후 로그인 대기 중...");
+      }
     } else {
-      logout(); // 액세스 토큰 만료 시 로그아웃 처리
+      // 일반적인 인증 상태 확인
+      if (accessToken && isAccessTokenValid()) {
+        navigate("/");
+      } else {
+        logout();
+      }
     }
-  }, [navigate, accessToken, logout]);
+  }, [navigate, accessToken, logout, location]);
 };

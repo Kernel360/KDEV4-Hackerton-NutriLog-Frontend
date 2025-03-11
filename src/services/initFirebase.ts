@@ -16,9 +16,10 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// 🔹 Firebase 앱 초기화
+// Firebase 앱 초기화
 const app = initializeApp(firebaseConfig);
-console.log(app);
+
+// Firebase Messaging 초기화
 const messaging: Messaging = getMessaging(app);
 
 export { app, messaging, getToken, onMessage };
