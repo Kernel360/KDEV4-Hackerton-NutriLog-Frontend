@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 
-interface SupplementStore {
+interface SupplementScheduleStore {
   name: string;
   notify: boolean;
   selectedDays: string[];
@@ -19,7 +19,7 @@ interface SupplementStore {
   ) => Promise<void>;
 }
 
-const useSupplementStore = create<SupplementStore>((set) => ({
+const useSupplementScheduleStore = create<SupplementScheduleStore>((set) => ({
   name: "",
   notify: false,
   selectedDays: [],
@@ -31,11 +31,19 @@ const useSupplementStore = create<SupplementStore>((set) => ({
 
   addSupplementSchedule: async (name, selectedDays, dosageTimes, notify) => {
     try {
-      const response = await axios.post("/api/supplements/schedules", {
+      const token = localStorage.getItem('access_token'); 
+
+      const response = await axios.post("http://localhost:8080/api/supplements/schedules", {
         name,
         daysOfWeek: selectedDays, 
         scheduledTime: dosageTimes,  
         isNotificationEnabled: notify,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+          "Content-Type": "application/json", 
+        },
       });
 
       console.log("Response:", response);
@@ -49,4 +57,4 @@ const useSupplementStore = create<SupplementStore>((set) => ({
   },
 }));
 
-export default useSupplementStore;
+export default useSupplementScheduleStore;
