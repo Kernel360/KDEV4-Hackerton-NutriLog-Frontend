@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 interface SupplementScheduleStore {
   name: string;
