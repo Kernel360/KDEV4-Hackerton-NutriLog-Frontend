@@ -5,12 +5,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { ChevronRight, ChevronLeft } from "lucide-react"; // lucide-react 아이콘 불러오기
+import axios from "axios";
+import { useSupplementStore } from "../store/useSupplementStore";
 
 const MainPage = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs()); // Default to today
-  const [apiSupplements, setApiSupplements] = useState<any[]>([]); // API 응답 데이터 저장 state
+  const { searchSupplementHistorys, apiSupplements } = useSupplementStore(); // Zustand store에서 상태 가져오기
 
-  const days = ["월", "화", "수", "목", "금", "토", "일"];
+  const days = [ "일", "월", "화", "수", "목", "금", "토"];
 
   // 오늘 날짜를 기준으로 6일의 날짜 배열 만들기
   const generateDateRange = (currentDate: Dayjs) => {
@@ -29,26 +31,7 @@ const MainPage = () => {
 
   const handleDayClick = (date: Dayjs) => {
     setSelectedDate(date);
-    const month = date.format("MM"); // 월
-    const day = date.format("DD"); // 일
-    fetch(
-      `${import.meta.env.VITE_BASE_SERVER_URL}/api/supplements/${month}/${day}`
-    ) // 백엔드 API 엔드포인트 호출
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`); // 응답 실패 시 에러 처리
-        }
-        return response.json(); // JSON 형식으로 응답 파싱
-      })
-      .then((data) => {
-        console.log("API 응답 데이터:", data); // 응답 데이터 콘솔에 출력
-        setApiSupplements(data); // API 응답 데이터를 state에 저장
-        // 응답 데이터를 state에 저장하거나, 화면에 표시하는 로직 구현
-      })
-      .catch((error) => {
-        console.error("API 요청 에러:", error); // 에러 발생 시 콘솔에 에러 메시지 출력
-        // 사용자에게 에러를 알리거나, 에러 처리 로직 구현
-      });
+    searchSupplementHistorys(date);
   };
 
   const handleArrowClick = (direction: "prev" | "next") => {
@@ -148,19 +131,6 @@ const MainPage = () => {
                             method: "PATCH",
                           }
                         );
-                        setApiSupplements((prevSupplements) => {
-                          return prevSupplements.map((prevSupplement) => {
-                            if (prevSupplement.historyId === historyId) {
-                              return {
-                                ...prevSupplement,
-                                checked: isChecked,
-                                status: isChecked ? "TAKEN" : "UNTAKEN",
-                              };
-                            } else {
-                              return prevSupplement;
-                            }
-                          });
-                        });
                       }}
                     />
                   }
