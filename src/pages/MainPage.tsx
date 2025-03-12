@@ -10,7 +10,7 @@ import { useSupplementStore } from "../store/useSupplementStore";
 
 const MainPage = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs()); // Default to today
-  const { searchSupplementHistorys, apiSupplements } = useSupplementStore(); // Zustand store에서 상태 가져오기
+  const { searchSupplementHistorys, apiSupplements, updateSupplementHistory } = useSupplementStore(); // Zustand store에서 상태 가져오기
 
   const days = [ "일", "월", "화", "수", "목", "금", "토"];
 
@@ -121,16 +121,7 @@ const MainPage = () => {
                       onChange={(event) => {
                         const isChecked = event.target.checked;
                         const historyId = supplement.historyId;
-                        fetch(
-                          `${
-                            import.meta.env.VITE_BASE_SERVER_URL
-                          }/api/supplements/history/${historyId}?status=${
-                            isChecked ? "TAKEN" : "UNTAKEN"
-                          }`, // 쿼리 파라미터로 status 값을 전달
-                          {
-                            method: "PATCH",
-                          }
-                        );
+                        updateSupplementHistory(historyId, isChecked);
                       }}
                     />
                   }
