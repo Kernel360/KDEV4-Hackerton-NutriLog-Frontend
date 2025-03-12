@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -8,14 +8,17 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from '@mui/material';
-import { MoreVertical } from 'lucide-react';
-import { useSupplementStore } from '../store/useSupplementStroe'; // Zustand store import
+} from "@mui/material";
+import { MoreVertical } from "lucide-react";
+import { useSupplementStore } from "../store/useSupplementStore"; // Zustand store import
 
 const MyPage = () => {
-  const { supplements, fetchSupplements, deleteSupplement } = useSupplementStore(); // Zustand store에서 상태 가져오기
+  const { supplements, fetchSupplements, deleteSupplement } =
+    useSupplementStore(); // Zustand store에서 상태 가져오기
   const [openModal, setOpenModal] = useState(false);
-  const [selectedSupplement, setSelectedSupplement] = useState<number | null>(null);
+  const [selectedSupplement, setSelectedSupplement] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     fetchSupplements(); // 컴포넌트가 마운트될 때 데이터 가져오기
@@ -109,9 +112,7 @@ const MyPage = () => {
           <Button onClick={handleEdit} color="primary">
             수정
           </Button>
-          <Button onClick={handleCloseModal}>
-            취소
-          </Button>
+          <Button onClick={handleCloseModal}>취소</Button>
         </DialogActions>
       </Dialog>
     </div>

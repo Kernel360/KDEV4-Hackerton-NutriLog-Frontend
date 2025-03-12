@@ -14,7 +14,7 @@ interface SupplementScheduleStore {
   addSupplementSchedule: (
     name: string,
     selectedDays: string[],
-    dosageTimes: string[],  
+    dosageTimes: string[],
     notify: boolean
   ) => Promise<void>;
 }
@@ -31,20 +31,23 @@ const useSupplementScheduleStore = create<SupplementScheduleStore>((set) => ({
 
   addSupplementSchedule: async (name, selectedDays, dosageTimes, notify) => {
     try {
-      const token = localStorage.getItem('access_token'); 
+      const token = localStorage.getItem("access_token");
 
-      const response = await axios.post("http://localhost:8080/api/supplements/schedules", {
-        name,
-        daysOfWeek: selectedDays, 
-        scheduledTime: dosageTimes,  
-        isNotificationEnabled: notify,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, 
-          "Content-Type": "application/json", 
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_SERVER_URL}/api/supplements/schedules`,
+        {
+          name,
+          daysOfWeek: selectedDays,
+          scheduledTime: dosageTimes,
+          isNotificationEnabled: notify,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log("Response:", response);
 

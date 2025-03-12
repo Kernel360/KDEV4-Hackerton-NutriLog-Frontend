@@ -31,19 +31,21 @@ const MainPage = () => {
     setSelectedDate(date);
     const month = date.format("MM"); // 월
     const day = date.format("DD"); // 일
-    fetch(`http://localhost:8080/api/supplements/${month}/${day}`) // 백엔드 API 엔드포인트 호출
-      .then(response => {
+    fetch(
+      `${import.meta.env.VITE_BASE_SERVER_URL}/api/supplements/${month}/${day}`
+    ) // 백엔드 API 엔드포인트 호출
+      .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`); // 응답 실패 시 에러 처리
         }
         return response.json(); // JSON 형식으로 응답 파싱
       })
-      .then(data => {
+      .then((data) => {
         console.log("API 응답 데이터:", data); // 응답 데이터 콘솔에 출력
         setApiSupplements(data); // API 응답 데이터를 state에 저장
         // 응답 데이터를 state에 저장하거나, 화면에 표시하는 로직 구현
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("API 요청 에러:", error); // 에러 발생 시 콘솔에 에러 메시지 출력
         // 사용자에게 에러를 알리거나, 에러 처리 로직 구현
       });
@@ -93,9 +95,7 @@ const MainPage = () => {
                 }}
               >
                 {days[date.day()]}
-                <span className="text-xs">
-                  {date.format("MM/DD")}
-                </span>
+                <span className="text-xs">{date.format("MM/DD")}</span>
               </Button>
             </div>
           ))}
@@ -117,54 +117,57 @@ const MainPage = () => {
               선택된 날짜: {selectedDate.format("YYYY-MM-DD")}
             </h3>
 
-            {apiSupplements
-              .map((supplement) => (
-                <div
-                  key={supplement.historyId}
-                  className="flex justify-between items-center p-4 border border-gray-300 rounded-lg shadow-sm"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-semibold">{supplement.supplementName}</span>
-                    <span className="text-sm text-gray-600">
-                      알림 시간: {supplement.scheduleTime}
-                    </span>
-                  </div>
-
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={supplement.checked || false}
-                        onChange={(event) => {
-                          const isChecked = event.target.checked;
-                          const historyId = supplement.historyId;
-                          fetch(
-                            `http://localhost:8080/api/supplements/history/${historyId}?status=${
-                              isChecked ? "TAKEN" : "UNTAKEN"
-                            }`,
-                            {
-                              method: "PATCH",
-                            }
-                          );
-                          setApiSupplements((prevSupplements) =>
-                            prevSupplements.map((prevSupplement) => {
-                              if (prevSupplement.historyId === historyId) {
-                                return {
-                                  ...prevSupplement,
-                                  checked: isChecked,
-                                  status: isChecked ? "TAKEN" : "UNTAKEN",
-                                };
-                              } else {
-                                return prevSupplement;
-                              }
-                            })
-                          );
-                        }}
-                      />
-                    }
-                    label="복용 완료"
-                  />
+            {apiSupplements.map((supplement) => (
+              <div
+                key={supplement.historyId}
+                className="flex justify-between items-center p-4 border border-gray-300 rounded-lg shadow-sm"
+              >
+                <div className="flex flex-col">
+                  <span className="font-semibold">
+                    {supplement.supplementName}
+                  </span>
+                  <span className="text-sm text-gray-600">
+                    알림 시간: {supplement.scheduleTime}
+                  </span>
                 </div>
-              ))}
+
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={supplement.checked || false}
+                      onChange={(event) => {
+                        const isChecked = event.target.checked;
+                        const historyId = supplement.historyId;
+                        fetch(
+                          `${
+                            import.meta.env.VITE_BASE_SERVER_URL
+                          }/api/supplements/history/${historyId}?status=${
+                            isChecked ? "TAKEN" : "UNTAKEN"
+                          }`, // 쿼리 파라미터로 status 값을 전달
+                          {
+                            method: "PATCH",
+                          }
+                        );
+                        setApiSupplements((prevSupplements) => {
+                          return prevSupplements.map((prevSupplement) => {
+                            if (prevSupplement.historyId === historyId) {
+                              return {
+                                ...prevSupplement,
+                                checked: isChecked,
+                                status: isChecked ? "TAKEN" : "UNTAKEN",
+                              };
+                            } else {
+                              return prevSupplement;
+                            }
+                          });
+                        });
+                      }}
+                    />
+                  }
+                  label="복용 완료"
+                />
+              </div>
+            ))}
           </div>
         )}  
       </div>
@@ -173,4 +176,3 @@ const MainPage = () => {
 };
 
 export default MainPage;
-
