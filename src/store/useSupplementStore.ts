@@ -16,6 +16,7 @@ interface SupplementStore {
   deleteSupplement: (supplementId: number) => void;
   searchSupplementHistorys: (date : Dayjs) => void;
   setApiSupplements: (apiSupplements: any[]) => void;
+  updateSupplementHistory: (historyId: number, isChecked: boolean) => Promise<void>;
 }
 
 export const useSupplementStore = create<SupplementStore>((set) => ({
@@ -104,4 +105,24 @@ export const useSupplementStore = create<SupplementStore>((set) => ({
     }
   },
   setApiSupplements: (apiSupplements: any[]) => set({ apiSupplements }),
+  
+  updateSupplementHistory: async (historyId: number, isChecked: boolean) => {
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_BASE_SERVER_URL}/api/supplements/history/${historyId}?status=${isChecked ? "TAKEN" : "UNTAKEN"}`
+      );
+      console.log(`Supplement history with id ${historyId} updated successfully`);
+
+      // 필요하다면, Zustand 스토어의 apiSupplements 상태를 업데이트할 수 있습니다.
+      set((state) => ({
+        apiSupplements: state.apiSupplements.map((supplement) =>
+          supplement.historyId === historyId
+            ? { ...supplement, checked: isChecked, status: isChecked ? "TAKEN" : "UNTAKEN" }
+            : supplement
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating supplement history:", error);
+    }
+  },
 }));
