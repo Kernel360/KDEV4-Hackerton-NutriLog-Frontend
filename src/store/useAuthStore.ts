@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     login: async (code: string, provider: "KAKAO" | "GOOGLE") => {
       try {
         const response = await axios.post(
-          "http://localhost:8080/api/auth/login",
+          `${import.meta.env.VITE_BASE_SERVER_URL}/api/auth/login`,
           {
             code,
             provider,
@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
       try {
         await axios.post(
-          "http://localhost:8080/api/notifications/fcm-token",
+          `${import.meta.env.VITE_BASE_SERVER_URL}/api/notifications/fcm-token`,
           { token },
           {
             headers: {
