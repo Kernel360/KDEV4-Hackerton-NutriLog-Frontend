@@ -2,9 +2,6 @@ import { create } from "zustand";
 import axios from "axios";
 import { Dayjs } from "dayjs";
 
-axios.defaults.baseURL = import.meta.env.VITE_BASE_SERVER_URL;
-
-
 interface SupplementScheduleStore {
   name: string;
   notify: boolean;

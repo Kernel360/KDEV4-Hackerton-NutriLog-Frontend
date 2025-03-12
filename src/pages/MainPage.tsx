@@ -9,15 +9,6 @@ import { ChevronRight, ChevronLeft } from "lucide-react"; // lucide-react 아이
 const MainPage = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs()); // Default to today
   const [apiSupplements, setApiSupplements] = useState<any[]>([]); // API 응답 데이터 저장 state
-  // const [checked, setChecked] = useState<boolean[]>([
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  //   false,
-  // ]);
 
   const days = ["월", "화", "수", "목", "금", "토", "일"];
 
@@ -65,14 +56,6 @@ const MainPage = () => {
         : dayjs(dateRange[6]).add(1, "day");
     setDateRange(generateDateRange(newDate));
   };
-
-  // const handleCheckChange = (index: number) => {
-  //   setChecked(prev => {
-  //     const newChecked = [...prev];
-  //     newChecked[index] = !newChecked[index];
-  //     return newChecked;
-  //   });
-  // };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
