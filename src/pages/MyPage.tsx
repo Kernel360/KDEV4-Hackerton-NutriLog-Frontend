@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { MoreVertical } from "lucide-react";
 import { useSupplementStore } from "../store/useSupplementStore"; // Zustand store import
+import { useAuthStore } from "../store/useAuthStore";
 
 const MyPage = () => {
   const { supplements, fetchSupplements, deleteSupplement } =
@@ -19,6 +20,7 @@ const MyPage = () => {
   const [selectedSupplement, setSelectedSupplement] = useState<number | null>(
     null
   );
+  const { nickname } = useAuthStore();
 
   useEffect(() => {
     fetchSupplements(); // 컴포넌트가 마운트될 때 데이터 가져오기
@@ -56,7 +58,7 @@ const MyPage = () => {
           <Typography variant="h5">회원 정보</Typography>
           <div className="flex items-center mt-2">
             <div className="w-12 h-12 rounded-full bg-gray-300"></div>
-            <Typography className="ml-4">홍길동</Typography>
+            <Typography className="ml-4">{'조형준'}</Typography>
           </div>
         </CardContent>
       </Card>
